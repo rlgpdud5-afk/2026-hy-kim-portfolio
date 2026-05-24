@@ -45,7 +45,7 @@ const esTranslations = [
   ['From smart factory manufacturing to public-sector systems and senior-care platforms, I lead every phase from planning through operations as an execution-focused project manager.', 'Desde la manufactura de fábrica inteligente hasta los sistemas del sector público y plataformas de cuidado senior, lidero cada fase desde la planificación hasta la operación como gerente de proyectos orientada a la ejecución.'],
   ['I turn complex technology into services that fit naturally into everyday life, building solutions that connect people and data.', 'Transformo la tecnología compleja en servicios que encajan de forma natural en la vida cotidiana, creando soluciones que conectan personas y datos.'],
   ['Everything I have done so far is the launchpad for the next innovation.', 'Todo lo que he hecho hasta ahora es el punto de partida para la próxima innovación.'],
-  ['A project manager who understands the field, <br>a strategist who solves problems.', 'Una gerente de proyectos que comprende el campo, <br>una estratega que resuelve problemas.'],
+  ['A project manager who understands the field, <br>a strategist who solves problems.', 'Project manager que conoce el terreno,<br>estratega que resuelve problemas.'],
   ['Public Sector Integrated Monitoring System', 'Sistema Integrado de Monitoreo del Sector Público'],
   ['Smart Factory Advancement', 'Avance de Fábrica Inteligente'],
   ['Public Agency Website Renewal', 'Renovación de Sitio Web de Agencia Pública'],
