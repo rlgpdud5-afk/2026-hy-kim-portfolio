@@ -135,5 +135,5 @@ esTranslations.sort((a, b) => b[0].length - a[0].length);
 for (const [from, to] of esTranslations) es = es.split(from).join(to);
 
 writeFileSync(path.join(root, 'index-es.html'), es, 'utf8');
-writeFileSync(path.join(root, '2026 HY KIM PORTFOLIO V.1.0.html'), readFileSync(path.join(root, 'index.html'), 'utf8'), 'utf8');
+writeFileSync(path.join(root, '2026 HY KIM PORTFOLIO V.3.0.html'), readFileSync(path.join(root, 'index.html'), 'utf8'), 'utf8');
 console.log('languages ready');
