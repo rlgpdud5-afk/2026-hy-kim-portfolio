@@ -248,7 +248,7 @@ header .site-map-btn:hover::after{ width:100%; }
     </header>
 
     <!-- site-map -->
-    <div class="site-map is--on">
+    <div class="site-map">
         <div class="site-map-inner">
             <div class="close"></div>
             <div class="conts-wrap">
@@ -371,6 +371,18 @@ header .site-map-btn:hover::after{ width:100%; }
                                 <div class="swiper-slide">
                                     <div class="content tilt-card">
                                         <div class="conts-inner">
+                                            <div class="img_box"><img src="assets/gigcareer/main-hero.png" alt="GigCareer 메인"></div>
+                                            <div class="txt_box">
+                                                <h2>GigCareer D-GIG</h2>
+                                                <a href="javascript:void(0)" class="b_type1 en port-item05"><span>READ MORE</span><i class="icon arrow-right01"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="swiper-slide">
+                                    <div class="content tilt-card">
+                                        <div class="conts-inner">
                                             <div class="img_box"><img src="https://blog.kakaocdn.net/dn/dCUMcp/btsNRZ0KlZD/axYjZEpK5CQ7WMznipP1t1/img.jpg"></div>
                                             <div class="txt_box">
                                                 <h2>산출물</h2>
@@ -384,17 +396,113 @@ header .site-map-btn:hover::after{ width:100%; }
                         </div>
                     </div>
                     <script>
+                        var protScrollbarDragging = false;
+
+                        function getProtScrollProgress(swiper) {
+                            var min = swiper.minTranslate();
+                            var max = swiper.maxTranslate();
+                            var range = max - min;
+                            if (range === 0) return 0;
+                            return (swiper.translate - min) / range;
+                        }
+
+                        function syncProtScrollbar(swiper) {
+                            var scrollbar = swiper.scrollbar;
+                            if (!scrollbar || !scrollbar.el || !scrollbar.dragEl) return;
+
+                            var trackSize = scrollbar.el.offsetHeight;
+                            var dragSize = scrollbar.dragEl.offsetHeight;
+                            var progress = Math.max(0, Math.min(1, getProtScrollProgress(swiper)));
+                            var position = (trackSize - dragSize) * progress;
+
+                            scrollbar.dragEl.style.transform = "translate3d(0px, " + position + "px, 0px)";
+                        }
+
+                        function setProtScrollProgress(swiper, progress) {
+                            var min = swiper.minTranslate();
+                            var max = swiper.maxTranslate();
+                            progress = Math.max(0, Math.min(1, progress));
+                            swiper.setTransition(0);
+                            swiper.setTranslate(min + progress * (max - min));
+                            swiper.updateProgress();
+                            swiper.updateActiveIndex();
+                            syncProtScrollbar(swiper);
+                        }
+
+                        function initProtScrollbarDrag(swiper) {
+                            var scrollbar = swiper.scrollbar;
+                            if (!scrollbar || !scrollbar.el || !scrollbar.dragEl) return;
+
+                            var track = scrollbar.el;
+                            var dragEl = scrollbar.dragEl;
+                            var startY = 0;
+                            var startPosition = 0;
+
+                            function getDragPosition() {
+                                var match = dragEl.style.transform.match(/,\s*([\d.]+)px/);
+                                return match ? parseFloat(match[1]) : 0;
+                            }
+
+                            function onPointerDown(e) {
+                                protScrollbarDragging = true;
+                                startY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+                                startPosition = getDragPosition();
+                                document.addEventListener("mousemove", onPointerMove);
+                                document.addEventListener("mouseup", onPointerUp);
+                                document.addEventListener("touchmove", onPointerMove, { passive: false });
+                                document.addEventListener("touchend", onPointerUp);
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+
+                            function onPointerMove(e) {
+                                if (!protScrollbarDragging) return;
+
+                                var clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+                                var trackSize = track.offsetHeight;
+                                var dragSize = dragEl.offsetHeight;
+                                var newPosition = Math.max(0, Math.min(trackSize - dragSize, startPosition + (clientY - startY)));
+                                var progress = newPosition / (trackSize - dragSize);
+
+                                setProtScrollProgress(swiper, progress);
+                                e.preventDefault();
+                            }
+
+                            function onPointerUp() {
+                                protScrollbarDragging = false;
+                                document.removeEventListener("mousemove", onPointerMove);
+                                document.removeEventListener("mouseup", onPointerUp);
+                                document.removeEventListener("touchmove", onPointerMove);
+                                document.removeEventListener("touchend", onPointerUp);
+                            }
+
+                            function onTrackClick(e) {
+                                if (dragEl.contains(e.target)) return;
+
+                                var trackRect = track.getBoundingClientRect();
+                                var dragSize = dragEl.offsetHeight;
+                                var trackSize = track.offsetHeight;
+                                var position = e.clientY - trackRect.top - dragSize / 2;
+                                position = Math.max(0, Math.min(trackSize - dragSize, position));
+                                setProtScrollProgress(swiper, position / (trackSize - dragSize));
+                            }
+
+                            dragEl.addEventListener("mousedown", onPointerDown);
+                            dragEl.addEventListener("touchstart", onPointerDown, { passive: false });
+                            track.addEventListener("click", onTrackClick);
+                        }
+
                         var swiper = new Swiper(".prot-swiper", {
                             direction: "vertical",
                             slidesPerView: 1.75,
-                            loopedSlides: 2,
                             speed: 750,
                             spaceBetween: 100,
                             parallax: true,
                             centeredSlides: true,
+                            centeredSlidesBounds: true,
                             scrollbar: {
                                 el: ".swiper-scrollbar",
-                                draggable: true,
+                                draggable: false,
                             },
                             mousewheel: {
                                 invert: false,
@@ -402,11 +510,29 @@ header .site-map-btn:hover::after{ width:100%; }
                                 sensitivity: 1,
                                 releaseOnEdges: true,
                             },
-                            breakpoints: {
-                                1024: {},
+                            on: {
+                                init: function () {
+                                    this.scrollbar.updateSize();
+                                    syncProtScrollbar(this);
+                                    initProtScrollbarDrag(this);
+                                },
+                                setTranslate: function () {
+                                    if (!protScrollbarDragging) {
+                                        syncProtScrollbar(this);
+                                    }
+                                },
+                                resize: function () {
+                                    this.scrollbar.updateSize();
+                                    syncProtScrollbar(this);
+                                },
                             },
                         });
 
+                        window.addEventListener("load", function () {
+                            swiper.update();
+                            swiper.scrollbar.updateSize();
+                            syncProtScrollbar(swiper);
+                        });
                     </script>
                 </section>
 
@@ -662,6 +788,55 @@ header .site-map-btn:hover::after{ width:100%; }
         </div>
     </div>
 
+    <div class="modal prot-0105">
+        <div class="close"></div>
+        <div class="container">
+            <div class="content">
+                <div class="img_box">
+                    <img src="assets/gigcareer/main-hero.png" alt="GigCareer 메인 랜딩">
+                    <img src="assets/gigcareer/service.png" alt="D-GIG 서비스 소개">
+                    <img src="assets/gigcareer/experience.png" alt="로컬크루 체험하기">
+                    <img src="assets/gigcareer/demo-mvp.png" alt="로컬크루 MVP 데모">
+                </div>
+                <div class="info_box">
+                    <div class="txt_group">
+                        <h4>직책</h4>
+                        <ul>
+                            <li>대표 (GigCareer / D-GIG)</li>
+                        </ul>
+                    </div>
+                    <div class="txt_group">
+                        <h4>주요업무</h4>
+                        <ul>
+                            <li>사업 전략·비전 수립 및 D-GIG 로컬 긱 플랫폼 총괄 (기획·개발·운영 일원화)</li>
+                            <li>투자자 IR·피칭 및 사업 모델·수익 구조 설계</li>
+                            <li>지역 청년·기업 대상 서비스 IA·화면 설계 및 B2B 사업 사이트 직접 구축</li>
+                            <li>LER(학습·고용 기록) 검증·포트폴리오 자동화 MVP 프로토타입 기획·개발</li>
+                            <li>청년/기업/PM 역할별 MVP 체험 플로우 설계 및 React 기반 데모 구현</li>
+                            <li>노동시장 데이터 인사이트 리포트 기획 및 gigcareer.kr 배포·운영</li>
+                        </ul>
+                    </div>
+                    <div class="txt_group">
+                        <h4>주요성과</h4>
+                        <ul>
+                            <li>지역 미스매치 문제를 Local Gig → LER → Global Match 3-Step 솔루션으로 구조화</li>
+                            <li>비즈니스·기술·투자 커뮤니케이션을 대표 1인 체계로 총괄 수행</li>
+                            <li>로컬크루 MVP 체험형 데모(역할 기반 대시보드) 프로토타입 단독 완성</li>
+                            <li>사업 사이트·체험·데모 페이지 통합 구축 및 gigcareer.kr 배포</li>
+                        </ul>
+                    </div>
+                    <div class="txt_group">
+                        <h4>링크</h4>
+                        <ul>
+                            <li><a href="https://www.gigcareer.kr/index.html" target="_blank" rel="noopener">사업 사이트</a></li>
+                            <li><a href="https://www.gigcareer.kr/experience.html" target="_blank" rel="noopener">체험·데모 페이지</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         $(document).ready(function () {
             $(".tilt-card").each(function () {
@@ -691,6 +866,10 @@ header .site-map-btn:hover::after{ width:100%; }
 
             $(".port-item04").click(function(){
                 $('.prot-0104').addClass('is--on')
+            });
+
+            $(".port-item05").click(function(){
+                $('.prot-0105').addClass('is--on')
             });
 
 
