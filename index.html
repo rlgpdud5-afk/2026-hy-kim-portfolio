@@ -1,7 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <script>
+    (function () {
+        window.PORTFOLIO_ROOT = (function () {
+            if (location.protocol === 'file:') {
+                var href = location.href.split('#')[0].split('?')[0];
+                return href.slice(0, href.lastIndexOf('/') + 1);
+            }
+            var p = location.pathname;
+            if (!p.endsWith('/')) p = p.replace(/\/[^/]*$/, '/');
+            return location.origin + p;
+        })();
+        window.portfolioAsset = function (rel) {
+            return PORTFOLIO_ROOT + rel.replace(/^\.\//, '');
+        };
+        function fixPortfolioAssets() {
+            document.querySelectorAll('img[src^="assets/"]').forEach(function (img) {
+                img.src = portfolioAsset(img.getAttribute('src'));
+            });
+            document.querySelectorAll('[data-asset-bg]').forEach(function (el) {
+                el.style.backgroundImage = "url('" + portfolioAsset(el.getAttribute('data-asset-bg')) + "')";
+            });
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fixPortfolioAssets);
+        else fixPortfolioAssets();
+    })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/smooth-scrollbar/1.1.9/smooth_scrollbar.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&amp;display=swap" rel="stylesheet">
@@ -12,7 +38,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     
-    <title>2026 Portfolio</title>
+    <title>2026 Portfolio | 김혜영</title>
 </head>
 <script>
 $(document).ready(function () {
@@ -54,12 +80,18 @@ canvas{position: fixed; left:0; top:0; width:100%; height:100%; opacity: .95;}
 
 header{ display: flex; justify-content: space-between; position: fixed; left:0; top:0; width:100%; padding:42px; z-index: 100000; }
 header .logo{ font-size:32px; font-weight: 800; }
+header .header-right{ display:flex; align-items:center; gap:24px; }
+.lang-switch{ display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; }
+.lang-switch a{ opacity:.45; transition:opacity .2s ease; }
+.lang-switch a:hover, .lang-switch a.is--on{ opacity:1; }
+.lang-switch a.is--on{ color:#ee3d47; }
+.lang-switch span{ opacity:.25; font-size:12px; }
 header .site-map-btn{ display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap:7px; position: relative; width:40px; height:40px; cursor: pointer; }
 header .site-map-btn::before, header .site-map-btn::after { content:''; width:100%; height:3px; border-radius: 100px; background:#fff; }
 header .site-map-btn::after{ width:65%; transition: all .3s ease; }
 header .site-map-btn:hover::after{ width:100%; }
 .main{ width:100%; height:100%; }
-.main-bg{ position: fixed; left:50%; top:50%; transform: translate(-50%,-50%); content:''; width:100%; height:100%; background:url('https://blog.kakaocdn.net/dn/TfIrE/btsNSBY75Fb/SpOyvqENMcXCDjhYMWani1/img.jpg') no-repeat center / cover;  filter: grayscale(1) brightness(.25) hue-rotate(100deg); }
+.main-bg{ position: fixed; left:50%; top:50%; transform: translate(-50%,-50%); content:''; width:100%; height:100%; background:none;  filter: grayscale(1) brightness(.25) hue-rotate(100deg); }
 .main-inner{ display: flex; position: relative; width:100%; height:100%; }
 .left_menu{ display: flex; flex-direction: column; justify-content: center; gap:25px; position: fixed; left:25%; transform: translateX(-100%); z-index: 10000; height:100%; }
 .left_menu h3{ font-weight: 700; opacity: .5; }
@@ -130,7 +162,7 @@ header .site-map-btn:hover::after{ width:100%; }
 .site-map .conts-right .cont-inner{ display: flex; align-items: center; justify-content: center; position: relative; transform: translate(0, 105%); width:100%; height:100%; background:#15171b; }
 .site-map .conts-left .cont01 .cont-inner{ display: flex; align-items: center; justify-content: center; }
 .site-map .conts-left .cont01 p{ width:50%; font-size:14px; text-align: center; word-break: keep-all; color:#999; }
-.site-map .conts-left .cont02 .cont-inner{ display: flex; background:url(https://blog.kakaocdn.net/dn/Y8nwS/btsNR0k79RE/KLdREbDJkFKE1mUXGdq8l1/img.jpg) no-repeat top / cover; filter: brightness(.23) grayscale(1); }
+.site-map .conts-left .cont02 .cont-inner{ display: flex; background:none; filter: brightness(.23) grayscale(1); }
 .site-map .conts-left .cont03 .cont-inner{ display: flex; align-items: center; justify-content: center; }
 .site-map .conts-left .cont03 .cont-inner ul{display: flex; flex-direction: column; gap:15px;}
 .site-map .conts-left .cont03 .cont-inner ul li{ display: flex; align-items: center; justify-content: center; }
@@ -244,7 +276,14 @@ header .site-map-btn:hover::after{ width:100%; }
     <!-- header -->
     <header>
         <a href="" class="logo en">KHY</a>
-        <div class="site-map-btn"></div>
+        <div class="header-right">
+            <nav class="lang-switch en" aria-label="Language">
+                <a href="index.html" class="is--on">KO</a>
+                <span>|</span>
+                <a href="index-en.html">EN</a>
+            </nav>
+            <div class="site-map-btn"></div>
+        </div>
     </header>
 
     <!-- site-map -->
@@ -263,7 +302,7 @@ header .site-map-btn:hover::after{ width:100%; }
                         </div>
                     </div>
                     <div class="cont cont02">
-                        <div class="cont-inner"></div>
+                        <div class="cont-inner" data-asset-bg="assets/portfolio/site-map-profile.jpg"></div>
                     </div>
                     <div class="cont cont03">
                         <div class="cont-inner">
@@ -306,7 +345,7 @@ header .site-map-btn:hover::after{ width:100%; }
 
     <!-- main -->
     <main class="main">
-        <div class="main-bg"></div>
+        <div class="main-bg" data-asset-bg="assets/portfolio/main-bg.jpg"></div>
         <canvas id="fluid"></canvas>
         <div class="main-inner">
             <div class="left_menu" id="menu">
@@ -335,7 +374,7 @@ header .site-map-btn:hover::after{ width:100%; }
                                 <div class="swiper-slide">
                                     <div class="content tilt-card">
                                         <div class="conts-inner">
-                                            <div class="img_box"><img src="https://blog.kakaocdn.net/dn/2RKK7/btsNSfu7EcV/zoD4CdZDw5E31Djo6mIXUk/img.jpg"></div>
+                                            <div class="img_box"><img src="assets/portfolio/slide-01.jpg"></div>
                                             <div class="txt_box">
                                                 <h2>공공부문통합모니터링시스템구축</h2>
                                                 <a href="javascript:void(0)" class="b_type1 en port-item01"><span>READ MORE</span><i class="icon arrow-right01"></i></a>
@@ -347,7 +386,7 @@ header .site-map-btn:hover::after{ width:100%; }
                                 <div class="swiper-slide">
                                     <div class="content tilt-card">
                                         <div class="conts-inner">
-                                            <div class="img_box"><img src="https://blog.kakaocdn.net/dn/cz4D44/btsNR0SUcf8/ZVAAPoqwn1B3nNfcMtbfnk/img.jpg"></div>
+                                            <div class="img_box"><img src="assets/portfolio/slide-02.jpg"></div>
                                             <div class="txt_box">
                                                 <h2>스마트공장 고도화 사업</h2>
                                                 <a href="javascript:void(0)" class="b_type1 en port-item02"><span>READ MORE</span><i class="icon arrow-right01"></i></a>
@@ -359,7 +398,7 @@ header .site-map-btn:hover::after{ width:100%; }
                                 <div class="swiper-slide">
                                     <div class="content tilt-card">
                                         <div class="conts-inner">
-                                            <div class="img_box"><img src="https://blog.kakaocdn.net/dn/coegwI/btsNRSHdm9G/pu6BFZ3os3ZNLcsJVarv3k/img.jpg"></div>
+                                            <div class="img_box"><img src="assets/portfolio/slide-03.jpg"></div>
                                             <div class="txt_box">
                                                 <h2>공공기관 홈페이지 리뉴얼</h2>
                                                 <a href="javascript:void(0)" class="b_type1 en port-item03"><span>READ MORE</span><i class="icon arrow-right01"></i></a>
@@ -383,7 +422,7 @@ header .site-map-btn:hover::after{ width:100%; }
                                 <div class="swiper-slide">
                                     <div class="content tilt-card">
                                         <div class="conts-inner">
-                                            <div class="img_box"><img src="https://blog.kakaocdn.net/dn/dCUMcp/btsNRZ0KlZD/axYjZEpK5CQ7WMznipP1t1/img.jpg"></div>
+                                            <div class="img_box"><img src="assets/portfolio/slide-04.jpg"></div>
                                             <div class="txt_box">
                                                 <h2>산출물</h2>
                                                 <a href="javascript:void(0)" class="b_type1 en port-item04"><span>READ MORE</span><i class="icon arrow-right01"></i></a>
@@ -574,7 +613,7 @@ header .site-map-btn:hover::after{ width:100%; }
                                             직장내에서도 함께 일하는 동료과도 친화적으로 지내며 밝은 에너지를 주고 업무 부분에서 또한그 조직에 없어서는 안될 인재로 자리매김 할수있는 사람으로 남고싶습니다.
                                         </p>
                                     </div>
-                                    <div class="bg-img bg01" data-scroll-class="is--on" data-scroll data-scroll-position="top"><img src="https://blog.kakaocdn.net/dn/12C2L/btsNSATu1eh/rhPezvkk3QpbUUxOSUCqpk/img.jpg"></div>
+                                    <div class="bg-img bg01" data-scroll-class="is--on" data-scroll data-scroll-position="top"><img src="assets/portfolio/profile-01.jpg"></div>
                                 </div>
 
                                 <div class="flex-box flex-left">
@@ -589,7 +628,7 @@ header .site-map-btn:hover::after{ width:100%; }
                                             저의 여러가지 방면의 것들을 최대한으로 사용하여 입사 후 필요한 분야에 사고하고 더 세심하게 공부해서 발전할 수 있는 인재가 되겠습니다.
                                         </p>
                                     </div>
-                                    <div class="bg-img bg02" data-scroll-class="is--on" data-scroll data-scroll-position="top"><img src="https://blog.kakaocdn.net/dn/ndSch/btsNSHLCZiX/SUXZEhkuQfuU5nHX3L4UB0/img.jpg"></div>
+                                    <div class="bg-img bg02" data-scroll-class="is--on" data-scroll data-scroll-position="top"><img src="assets/portfolio/profile-02.jpg"></div>
                                 </div>
 
 
@@ -604,7 +643,7 @@ header .site-map-btn:hover::after{ width:100%; }
                                             감사합니다.
                                         </p>
                                     </div>
-                                    <div class="bg-img bg05" data-scroll-class="is--on" data-scroll data-scroll-position="top"><img src="https://blog.kakaocdn.net/dn/TcsD9/btsNRJjfyJR/9x7m7ZEjUCXfx1mGRkShtK/img.jpg"></div>
+                                    <div class="bg-img bg05" data-scroll-class="is--on" data-scroll data-scroll-position="top"><img src="assets/portfolio/profile-03.jpg"></div>
                                 </div>
 
                                 <h2> “좋은 기획은 누구나 이해할 수 있는 흐름에서 시작됩니다.”</h2>
@@ -638,7 +677,7 @@ header .site-map-btn:hover::after{ width:100%; }
         <div class="container">
             <div class="content">
                 <div class="img_box">
-                    <img src="https://blog.kakaocdn.net/dn/vOf8Z/btsNSNLFMPz/zBDz3C6R01q0T2oKLJXvXk/img.png" alt="">
+                    <img src="assets/portfolio/modal-01-01.png" alt="">
                 </div>
                 <div class="info_box">
                     <div class="txt_group">
@@ -675,10 +714,10 @@ header .site-map-btn:hover::after{ width:100%; }
         <div class="container">
             <div class="content">
                 <div class="img_box">
-                    <img src="https://blog.kakaocdn.net/dn/wko0w/btsNS910Sn0/KqDmfJw5F4qRHDpXiqJhtk/img.png" alt="">
-                    <img src="https://blog.kakaocdn.net/dn/OyqSP/btsNRJXOaEF/nVBnoyecJmKk8HqRTOJ9bk/img.png" alt="">
-                    <img src="https://blog.kakaocdn.net/dn/3d2LT/btsNRejq5Vd/wObm9cDPNJk4uhzKr7qX50/img.png" alt="">
-                    <img src="https://blog.kakaocdn.net/dn/tU21k/btsNQVj8TlQ/uFgmHRhnuDRBtkefIBVftk/img.png" alt="">
+                    <img src="assets/portfolio/modal-02-01.png" alt="">
+                    <img src="assets/portfolio/modal-02-02.png" alt="">
+                    <img src="assets/portfolio/modal-02-03.png" alt="">
+                    <img src="assets/portfolio/modal-02-04.png" alt="">
                 </div>
                 <div class="info_box">
                     <div class="txt_group">
@@ -719,9 +758,9 @@ header .site-map-btn:hover::after{ width:100%; }
         <div class="container">
             <div class="content">
                 <div class="img_box">
-                    <img src="https://blog.kakaocdn.net/dn/yldS7/btsNRFBukjv/gz95eoHXQANbICOz3TXckK/img.jpg" alt="">
-                    <img src="https://blog.kakaocdn.net/dn/uAWKD/btsNSz78qu0/FbkUAQvxNkgX1KWnnL6o7K/img.jpg" alt="">
-                    <img src="https://blog.kakaocdn.net/dn/cxi4Y4/btsNRJjgnbk/KM63BvbHSkG1vTxKO3Ckb1/img.jpg" alt="">
+                    <img src="assets/portfolio/modal-03-01.jpg" alt="">
+                    <img src="assets/portfolio/modal-03-02.jpg" alt="">
+                    <img src="assets/portfolio/modal-03-03.jpg" alt="">
                 </div>
                 <div class="info_box">
                     <div class="txt_group">
@@ -750,7 +789,7 @@ header .site-map-btn:hover::after{ width:100%; }
         <div class="container">
             <div class="content">
                 <div class="img_box">
-                    <img src="https://blog.kakaocdn.net/dn/dJMpTM/btsNReqeQ8U/9QUYmIP1cjGefXP9EtA45K/img.png" alt="" style="filter: blur(3px);">
+                    <img src="assets/portfolio/modal-04-01.png" alt="" style="filter: blur(3px);">
                 </div>
                 <div class="info_box">
                     <div class="txt_group">
@@ -762,7 +801,7 @@ header .site-map-btn:hover::after{ width:100%; }
             </div>
             <div class="content">
                 <div class="img_box">
-                    <img src="https://blog.kakaocdn.net/dn/3toUR/btsNS5FsAZ3/Pqk46KtSgsTHaVChEkowyk/img.png" alt="" style="filter: blur(2px);">
+                    <img src="assets/portfolio/modal-04-02.png" alt="" style="filter: blur(2px);">
                 </div>
                 <div class="info_box">
                     <div class="txt_group">
@@ -774,7 +813,7 @@ header .site-map-btn:hover::after{ width:100%; }
             </div>
             <div class="content">
                 <div class="img_box">
-                    <img src="https://blog.kakaocdn.net/dn/b2NkX4/btsNSGzdzSr/eEJd5G9NdaLWnwZhjD0EmK/img.png" alt="" style="filter: blur(1px);">
+                    <img src="assets/portfolio/modal-04-03.png" alt="" style="filter: blur(1px);">
                 </div>
                 <div class="info_box">
                     <div class="txt_group">
